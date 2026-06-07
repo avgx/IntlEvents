@@ -11,19 +11,25 @@ public enum EventApi {
         objectId: AccessPoint? = nil,
         action: String? = nil
     ) -> Request<[Event]> {
-        var query: [(String, String?)] = [
+        var queryPairs: [(String, String)] = [
             ("count", String(limit)),
-            ("from", Timestamp.utc.string(from: past)),
-            ("to", Timestamp.utc.string(from: future)),
+            ("from", Timestamp.formatEventQuery(past)),
+            ("to", Timestamp.formatEventQuery(future)),
         ]
 
         if let objectId {
-            query.append(("objectId", objectId))
+            queryPairs.append(("objectId", objectId))
         }
         if let action {
-            query.append(("action", action))
+            queryPairs.append(("action", action))
         }
 
-        return Request(path: "secure/events", method: .get, query: query)
+        let query = queryPairs
+            .map { name, value in
+                "\(Timestamp.percentEncodedQueryValue(name))=\(Timestamp.percentEncodedQueryValue(value))"
+            }
+            .joined(separator: "&")
+
+        return Request(path: "secure/events?\(query)", method: .get, query: nil)
     }
 }

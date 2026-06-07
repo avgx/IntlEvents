@@ -18,11 +18,13 @@ enum FixtureSupport {
     #expect(events.count == 1)
     #expect(events[0].text == "Test event")
     #expect(events[0].objectId == "CAM:1")
+    #expect(events[0].timestamp != nil)
 }
 
 @Test func decodesEventsMissingTimestamp() throws {
     let events: [Event] = try FixtureSupport.decode("events-missing-ts")
     #expect(events[0].ts == nil)
+    #expect(events[0].timestamp == nil)
 }
 
 @Test func lprPlateDecoding() throws {
@@ -41,8 +43,11 @@ enum FixtureSupport {
         action: "MOTION"
     )
 
-    #expect(request.path == "secure/events")
-    #expect(request.query?.contains(where: { $0.0 == "objectId" && $0.1 == "CAM:1" }) == true)
-    #expect(request.query?.contains(where: { $0.0 == "action" && $0.1 == "MOTION" }) == true)
-    #expect(request.query?.contains(where: { $0.0 == "count" && $0.1 == "50" }) == true)
+    #expect(request.query == nil)
+    #expect(request.path.hasPrefix("secure/events?"))
+    #expect(request.path.contains("objectId=CAM:1"))
+    #expect(request.path.contains("action=MOTION"))
+    #expect(request.path.contains("count=50"))
+    #expect(request.path.contains("from=\(Timestamp.percentEncodedQueryValue(Timestamp.formatEventQuery(past)))"))
+    #expect(request.path.contains("to=\(Timestamp.percentEncodedQueryValue(Timestamp.formatEventQuery(future)))"))
 }
