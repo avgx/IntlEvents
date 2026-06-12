@@ -15,7 +15,7 @@ let package = Package(
         .library(name: "IntlEvents", targets: ["IntlEvents"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/avgx/IntlWireFormat", from: "1.0.0"),
+        .package(url: "https://github.com/avgx/IntlWireFormat", from: "1.0.1"),
         .package(url: "https://github.com/avgx/RequestResponse", from: "2.0.0"),
     ],
     targets: [
