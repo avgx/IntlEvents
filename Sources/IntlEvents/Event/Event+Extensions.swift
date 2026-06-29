@@ -23,7 +23,8 @@ extension Event {
     public var plate: String? {
         guard action == "NUMBER_DETECTED" else { return nil }
         guard let params0 else { return nil }
-        guard params3 != "utf8" else { return params0 }
+        /// Note: bug in intl for utf8. param3 == "utf8", but inside .utf16LittleEndian same as for unicode
+        guard ["unicode", "utf8"].contains(params3) else { return params0 }
 
         guard let data = Data(base64Encoded: params0) else { return params0 }
         return String(data: data, encoding: .utf16LittleEndian) ?? params0

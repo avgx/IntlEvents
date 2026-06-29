@@ -1,0 +1,12 @@
+[
+  {
+    "id": "{00000000-0000-4000-8000-000000000002}",
+    "objectId": "GRAY:1",
+    "ts": "2024-01-15T10:05:00.000+00:00",
+    "description": "Plate detected",
+    "action": "NUMBER_DETECTED",
+    "params0": "QQA5ADkAOQA5ADkAOQA5AA==",
+    "params3": "utf8",
+    "camId": "CAM:1"
+  }
+]

@@ -32,6 +32,16 @@ enum FixtureSupport {
     #expect(events[0].plate == "A123BC")
 }
 
+@Test func lprPlateDecodingUtf8() throws {
+    let events: [Event] = try FixtureSupport.decode("events-lpr-plate-utf8")
+    #expect(events[0].plate == "A9999999")
+}
+
+@Test func lprPlateDecodingUnicode() throws {
+    let events: [Event] = try FixtureSupport.decode("events-lpr-plate-unicode")
+    #expect(events[0].plate == "A9999999")
+}
+
 @Test func cameraAccessPointUsesLinkedObjectOwner() {
     let event = Event(
         id: "{1}",
