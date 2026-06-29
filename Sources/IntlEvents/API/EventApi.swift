@@ -32,4 +32,9 @@ public enum EventApi {
 
         return Request(path: "secure/events?\(query)", method: .get, query: nil)
     }
+
+    /// WebSocket descriptor for the live events feed.
+    public static func feed() -> Request<Void> {
+        Request(path: "secure/ws/events", method: .get, query: nil)
+    }
 }

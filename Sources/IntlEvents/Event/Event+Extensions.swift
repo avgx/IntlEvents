@@ -28,4 +28,31 @@ extension Event {
         guard let data = Data(base64Encoded: params0) else { return params0 }
         return String(data: data, encoding: .utf16LittleEndian) ?? params0
     }
+
+    /// Camera for snapshot/playback: first `camId`, else `objectId` when it is a camera AP.
+    public var primaryCameraAccessPoint: AccessPoint? {
+        if let first = camIds().first {
+            return first
+        }
+        if objectId.hasPrefix("CAM:") {
+            return objectId
+        }
+        return nil
+    }
+
+    /// Like ``primaryCameraAccessPoint``, then reverse `linkedObjects` lookup (e.g. ULPR → CAM).
+    public func cameraAccessPoint(linkedObjectOwners: [AccessPoint: AccessPoint]) -> AccessPoint? {
+        if let direct = primaryCameraAccessPoint {
+            return direct
+        }
+        return linkedObjectOwners[objectId]
+    }
+
+    /// Subtitle for event cards: trimmed params when they are not already shown as plate.
+    public var cardSubtitle: String? {
+        let trimmedParams = paramsDescription.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedParams.isEmpty else { return nil }
+        if let plate, trimmedParams == plate { return nil }
+        return trimmedParams
+    }
 }

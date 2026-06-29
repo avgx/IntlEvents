@@ -32,6 +32,18 @@ enum FixtureSupport {
     #expect(events[0].plate == "A123BC")
 }
 
+@Test func cameraAccessPointUsesLinkedObjectOwner() {
+    let event = Event(
+        id: "{1}",
+        objectId: "ULPR:1",
+        text: "LP recognized",
+        action: "NUMBER_DETECTED",
+        camId: ""
+    )
+    let owners = ["ULPR:1": "CAM:1"]
+    #expect(event.cameraAccessPoint(linkedObjectOwners: owners) == "CAM:1")
+}
+
 @Test func eventApiQueryIncludesFilters() {
     let past = Date(timeIntervalSince1970: 0)
     let future = Date(timeIntervalSince1970: 86_400)
@@ -50,4 +62,36 @@ enum FixtureSupport {
     #expect(request.path.contains("count=50"))
     #expect(request.path.contains("from=\(Timestamp.percentEncodedQueryValue(Timestamp.formatEventQuery(past)))"))
     #expect(request.path.contains("to=\(Timestamp.percentEncodedQueryValue(Timestamp.formatEventQuery(future)))"))
+}
+
+@Test func eventApiFeedPath() {
+    let request = EventApi.feed()
+    #expect(request.path == "secure/ws/events")
+    #expect(request.method == .get)
+}
+
+@Test func primaryCameraAccessPointPrefersCamId() {
+    let event = Event(
+        id: "{1}",
+        objectId: "ULPR:1",
+        text: "Plate",
+        action: "NUMBER_DETECTED",
+        camId: "CAM:2"
+    )
+    #expect(event.primaryCameraAccessPoint == "CAM:2")
+}
+
+@Test func primaryCameraAccessPointFallsBackToObjectId() {
+    let event = Event(
+        id: "{2}",
+        objectId: "CAM:1",
+        text: "Motion"
+    )
+    #expect(event.primaryCameraAccessPoint == "CAM:1")
+}
+
+@Test func cardSubtitleSkipsDuplicatePlate() throws {
+    let events: [Event] = try FixtureSupport.decode("events-lpr-plate")
+    #expect(events[0].plate == "A123BC")
+    #expect(events[0].cardSubtitle == nil)
 }
